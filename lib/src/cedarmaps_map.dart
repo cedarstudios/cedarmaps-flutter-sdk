@@ -1,21 +1,18 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-part of mapbox_gl;
+part of cedarmaps;
 
 typedef void MapCreatedCallback(MapboxMapController controller);
 
-class MapboxMap extends StatefulWidget {
-  const MapboxMap({
+class CedarmapsMap extends StatefulWidget {
+  const CedarmapsMap({
     @required this.initialCameraPosition,
-    this.accessToken,
+    this.clientID,
+    this.clientSecret,
     this.onMapCreated,
     this.onStyleLoadedCallback,
     this.gestureRecognizers,
     this.compassEnabled = true,
     this.cameraTargetBounds = CameraTargetBounds.unbounded,
-    this.styleString,
+    this.style,
     this.minMaxZoomPreference = MinMaxZoomPreference.unbounded,
     this.rotateGesturesEnabled = true,
     this.scrollGesturesEnabled = true,
@@ -28,7 +25,6 @@ class MapboxMap extends StatefulWidget {
     this.logoViewMargins,
     this.compassViewPosition,
     this.compassViewMargins,
-    this.attributionButtonMargins,
     this.onMapClick,
     this.onUserLocationUpdated,
     this.onMapLongClick,
@@ -38,12 +34,13 @@ class MapboxMap extends StatefulWidget {
     this.onMapIdle,
   }) : assert(initialCameraPosition != null);
 
-  /// If you want to use Mapbox hosted styles and map tiles, you need to provide a Mapbox access token.
-  /// Obtain a free access token on [your Mapbox account page](https://www.mapbox.com/account/access-tokens/).
-  /// The reccommended way is to use this parameter to set your access token, an alternative way to add your access tokens through external files is described in the plugin's wiki on Github.
-  ///
-  /// Note: You should not use this parameter AND set the access token through external files at the same time, and you should use the same token throughout the entire app.
-  final String accessToken;
+  /// If you want to use Cedarmaps hosted styles and map tiles, you need to provide a Cedarmaps client ID and client Secret.
+  /// Obtain your credentials on [Cedarmaps website](https://www.cedarmaps.com/).
+  final String clientID;
+
+  /// If you want to use Cedarmaps hosted styles and map tiles, you need to provide a Cedarmaps client ID and client Secret.
+  /// Obtain your credentials on [Cedarmaps website](https://www.cedarmaps.com/).
+  final String clientSecret;
 
   /// Please note: you should only add annotations (e.g. symbols or circles) after `onStyleLoadedCallback` has been called.
   final MapCreatedCallback onMapCreated;
@@ -61,10 +58,8 @@ class MapboxMap extends StatefulWidget {
   /// Geographical bounding box for the camera target.
   final CameraTargetBounds cameraTargetBounds;
 
-  /// Style URL or Style JSON
-  /// Can be a MapboxStyle constant, any Mapbox Style URL,
-  /// or a StyleJSON (https://docs.mapbox.com/mapbox-gl-js/style-spec/)
-  final String styleString;
+  /// Map Style
+  final MapStyle style;
 
   /// Preferred bounds for the camera zoom level.
   ///
@@ -130,9 +125,6 @@ class MapboxMap extends StatefulWidget {
   /// Set the layout margins for the Mapbox Compass
   final Point compassViewMargins;
 
-  /// Set the layout margins for the Mapbox Attribution Buttons
-  final Point attributionButtonMargins;
-
   /// Which gestures should be consumed by the map.
   ///
   /// It is possible for other gesture recognizers to be competing with the map on pointer
@@ -169,41 +161,82 @@ class MapboxMap extends StatefulWidget {
   final OnMapIdleCallback onMapIdle;
 
   @override
-  State createState() => _MapboxMapState();
+  State createState() => _CedarmapsMapState();
 }
 
-class _MapboxMapState extends State<MapboxMap> {
+class _CedarmapsMapState extends State<CedarmapsMap> {
+  Future<String> futureAccessToken;
+
   final Completer<MapboxMapController> _controller =
       Completer<MapboxMapController>();
 
-  _MapboxMapOptions _mapboxMapOptions;
+  _CedarmapsMapOptions _cedarmapsMapOptions;
   final MapboxGlPlatform _mapboxGlPlatform = MapboxGlPlatform.createInstance();
+
+  final _initialToken = 'pk.kdsevitantcaerspamradecsisiht';
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': widget.initialCameraPosition?.toMap(),
-      'options': _MapboxMapOptions.fromWidget(widget).toMap(),
-      'accessToken': widget.accessToken,
-    };
-    return _mapboxGlPlatform.buildView(
-        creationParams, onPlatformViewCreated, widget.gestureRecognizers);
+    return FutureBuilder<String>(
+      future: futureAccessToken,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final Map<String, dynamic> creationParams = <String, dynamic>{
+            'initialCameraPosition': widget.initialCameraPosition?.toMap(),
+            'options':
+                _CedarmapsMapOptions.fromWidget(widget, snapshot.data).toMap(),
+            'accessToken': _initialToken,
+          };
+
+          Uint8List logoBytes = base64Decode(Constants.ATTRIBUTION_LOGO);
+
+          var logoHorizontalMargin = 8.0;
+          var logoVerticalMargin = 8.0;
+
+          if (widget.logoViewMargins != null) {
+            logoHorizontalMargin += widget.logoViewMargins.x;
+            logoVerticalMargin += widget.logoViewMargins.y;
+          }
+
+          return Stack(
+            alignment: Alignment.bottomLeft,
+            children: <Widget>[
+              _mapboxGlPlatform.buildView(creationParams, onPlatformViewCreated,
+                  widget.gestureRecognizers),
+              Padding(
+                  padding: EdgeInsets.symmetric(
+                      horizontal: logoHorizontalMargin,
+                      vertical: logoVerticalMargin),
+                  child: Image.memory(logoBytes,
+                      width: 85, height: 21, fit: BoxFit.fitWidth))
+            ],
+          );
+        } else {
+          String color = MapStyleHelper.backgroundHexColor(widget.style)
+              .replaceAll('#', '0xff');
+          return Container(color: Color(int.parse(color)));
+        }
+      },
+    );
   }
 
   @override
   void initState() {
     super.initState();
-    _mapboxMapOptions = _MapboxMapOptions.fromWidget(widget);
+    futureAccessToken =
+        Authentication().getAccessToken(widget.clientID, widget.clientSecret);
+    _cedarmapsMapOptions = _CedarmapsMapOptions.fromWidget(widget, null);
   }
 
   @override
-  void didUpdateWidget(MapboxMap oldWidget) {
+  void didUpdateWidget(CedarmapsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    final _MapboxMapOptions newOptions = _MapboxMapOptions.fromWidget(widget);
+    final _CedarmapsMapOptions newOptions =
+        _CedarmapsMapOptions.fromWidget(widget, null);
     final Map<String, dynamic> updates =
-        _mapboxMapOptions.updatesMap(newOptions);
+        _cedarmapsMapOptions.updatesMap(newOptions);
     _updateOptions(updates);
-    _mapboxMapOptions = newOptions;
+    _cedarmapsMapOptions = newOptions;
   }
 
   void _updateOptions(Map<String, dynamic> updates) async {
@@ -211,29 +244,26 @@ class _MapboxMapState extends State<MapboxMap> {
       return;
     }
     final MapboxMapController controller = await _controller.future;
-    controller._updateMapOptions(updates);
+    controller.updateMapOptions(updates);
   }
 
   Future<void> onPlatformViewCreated(int id) async {
     MapboxGlPlatform.addInstance(id, _mapboxGlPlatform);
     final MapboxMapController controller = MapboxMapController.init(
-      id,
-      widget.initialCameraPosition,
-      onStyleLoadedCallback: () {
-        if (_controller.isCompleted) {
-          widget.onStyleLoadedCallback();
-        } else {
-          _controller.future.then((_) => widget.onStyleLoadedCallback());
-        }
-      },
+        id, widget.initialCameraPosition, onStyleLoadedCallback: () {
+      if (_controller.isCompleted) {
+        widget.onStyleLoadedCallback();
+      } else {
+        _controller.future.then((_) => widget.onStyleLoadedCallback());
+      }
+    },
         onMapClick: widget.onMapClick,
         onUserLocationUpdated: widget.onUserLocationUpdated,
         onMapLongClick: widget.onMapLongClick,
         onCameraTrackingDismissed: widget.onCameraTrackingDismissed,
         onCameraTrackingChanged: widget.onCameraTrackingChanged,
         onCameraIdle: widget.onCameraIdle,
-        onMapIdle: widget.onMapIdle
-    );
+        onMapIdle: widget.onMapIdle);
     await MapboxMapController.initPlatform(id);
     _controller.complete(controller);
     if (widget.onMapCreated != null) {
@@ -246,8 +276,8 @@ class _MapboxMapState extends State<MapboxMap> {
 ///
 /// When used to change configuration, null values will be interpreted as
 /// "do not change this configuration option".
-class _MapboxMapOptions {
-  _MapboxMapOptions({
+class _CedarmapsMapOptions {
+  _CedarmapsMapOptions({
     this.compassEnabled,
     this.cameraTargetBounds,
     this.styleString,
@@ -263,14 +293,17 @@ class _MapboxMapOptions {
     this.logoViewMargins,
     this.compassViewPosition,
     this.compassViewMargins,
-    this.attributionButtonMargins,
   });
 
-  static _MapboxMapOptions fromWidget(MapboxMap map) {
-    return _MapboxMapOptions(
+  static _CedarmapsMapOptions fromWidget(CedarmapsMap map, String accessToken) {
+    return _CedarmapsMapOptions(
       compassEnabled: map.compassEnabled,
       cameraTargetBounds: map.cameraTargetBounds,
-      styleString: map.styleString,
+      styleString: accessToken == null
+          ? null
+          : [Constants.CEDARMAPS_BASE_URL, MapStyleHelper.urlPath(map.style)]
+                  .join('/') +
+              '?access_token=$accessToken',
       minMaxZoomPreference: map.minMaxZoomPreference,
       rotateGesturesEnabled: map.rotateGesturesEnabled,
       scrollGesturesEnabled: map.scrollGesturesEnabled,
@@ -283,7 +316,6 @@ class _MapboxMapOptions {
       logoViewMargins: map.logoViewMargins,
       compassViewPosition: map.compassViewPosition,
       compassViewMargins: map.compassViewMargins,
-      attributionButtonMargins: map.attributionButtonMargins,
     );
   }
 
@@ -317,8 +349,6 @@ class _MapboxMapOptions {
 
   final Point compassViewMargins;
 
-  final Point attributionButtonMargins;
-
   Map<String, dynamic> toMap() {
     final Map<String, dynamic> optionsMap = <String, dynamic>{};
 
@@ -351,12 +381,10 @@ class _MapboxMapOptions {
     addIfNonNull('logoViewMargins', pointToArray(logoViewMargins));
     addIfNonNull('compassViewPosition', compassViewPosition?.index);
     addIfNonNull('compassViewMargins', pointToArray(compassViewMargins));
-    addIfNonNull(
-        'attributionButtonMargins', pointToArray(attributionButtonMargins));
     return optionsMap;
   }
 
-  Map<String, dynamic> updatesMap(_MapboxMapOptions newOptions) {
+  Map<String, dynamic> updatesMap(_CedarmapsMapOptions newOptions) {
     final Map<String, dynamic> prevOptionsMap = toMap();
     return newOptions.toMap()
       ..removeWhere(

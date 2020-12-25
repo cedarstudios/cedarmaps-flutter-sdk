@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:mapbox_gl/cedarmaps.dart';
 
 import 'main.dart';
 import 'page.dart';
@@ -31,7 +31,7 @@ class _ScrollingMapBodyState extends State<ScrollingMapBody> {
   MapboxMapController controllerOne;
   MapboxMapController controllerTwo;
 
-  final LatLng center = const LatLng(32.080664, 34.9563837);
+  final LatLng center = LatLng(35.7575, 51.4099);
 
   @override
   Widget build(BuildContext context) {
@@ -50,8 +50,9 @@ class _ScrollingMapBodyState extends State<ScrollingMapBody> {
                   child: SizedBox(
                     width: 300.0,
                     height: 300.0,
-                    child: MapboxMap(
-                      accessToken: MapsDemo.ACCESS_TOKEN,
+                    child: CedarmapsMap(
+                      clientID: MapsDemo.CLIENT_ID,
+                      clientSecret: MapsDemo.CLIENT_SECRET,
                       onMapCreated: onMapCreatedOne,
                       onStyleLoadedCallback: () => onStyleLoaded(controllerOne),
                       initialCameraPosition: CameraPosition(
@@ -86,8 +87,9 @@ class _ScrollingMapBodyState extends State<ScrollingMapBody> {
                   child: SizedBox(
                     width: 300.0,
                     height: 300.0,
-                    child: MapboxMap(
-                      accessToken: MapsDemo.ACCESS_TOKEN,
+                    child: CedarmapsMap(
+                      clientID: MapsDemo.CLIENT_ID,
+                      clientSecret: MapsDemo.CLIENT_SECRET,
                       onMapCreated: onMapCreatedTwo,
                       onStyleLoadedCallback: () => onStyleLoaded(controllerTwo),
                       initialCameraPosition: CameraPosition(

@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-library mapbox_gl;
+library cedarmaps;
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -13,6 +14,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart';
+
+import 'src/internal/authentication.dart';
+import 'src/internal/constants.dart' as Constants;
 
 export 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart'
     show
@@ -37,7 +41,7 @@ export 'package:mapbox_gl_platform_interface/mapbox_gl_platform_interface.dart'
         Fill,
         FillOptions;
 
-
-part 'src/controller.dart';
-part 'src/mapbox_map.dart';
 part 'src/global.dart';
+part 'src/controller.dart';
+part 'src/cedarmaps_style.dart';
+part 'src/cedarmaps_map.dart';

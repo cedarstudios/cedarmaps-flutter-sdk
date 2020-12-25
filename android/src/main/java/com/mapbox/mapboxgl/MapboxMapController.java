@@ -319,6 +319,9 @@ final class MapboxMapController
     mapboxMap.addOnCameraMoveListener(this);
     mapboxMap.addOnCameraIdleListener(this);
 
+    mapboxMap.getUiSettings().setAttributionEnabled(false);
+    mapboxMap.getUiSettings().setLogoEnabled(false);
+
     mapView.addOnStyleImageMissingListener((id) -> {
       DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
       final Bitmap bitmap = getScaledImage(id, displayMetrics.density);

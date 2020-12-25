@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:mapbox_gl/cedarmaps.dart';
 import 'package:mapbox_gl_example/main.dart';
 
 import 'page.dart';
@@ -85,9 +85,7 @@ class PlaceFillBodyState extends State<PlaceFillBody> {
           LatLng(-32.86711, 151.1947171),
           LatLng(-33.86711, 152.1947171),
         ]
-      ], 
-      fillColor: "#FF0000", 
-      fillOutlineColor: "#FF0000"),
+      ], fillColor: "#FF0000", fillOutlineColor: "#FF0000"),
     );
     setState(() {
       _fillCount += 1;
@@ -154,7 +152,8 @@ class PlaceFillBodyState extends State<PlaceFillBody> {
   }
 
   Future<void> _changeFillPattern() async {
-    String current = _selectedFill.options.fillPattern == null ? "assetImage" : null;
+    String current =
+        _selectedFill.options.fillPattern == null ? "assetImage" : null;
     _updateSelectedFill(
       FillOptions(fillPattern: current),
     );
@@ -170,8 +169,9 @@ class PlaceFillBodyState extends State<PlaceFillBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: MapboxMap(
-              accessToken: MapsDemo.ACCESS_TOKEN,
+            child: CedarmapsMap(
+              clientID: MapsDemo.CLIENT_ID,
+              clientSecret: MapsDemo.CLIENT_SECRET,
               onMapCreated: _onMapCreated,
               onStyleLoadedCallback: _onStyleLoaded,
               initialCameraPosition: const CameraPosition(
@@ -210,9 +210,8 @@ class PlaceFillBodyState extends State<PlaceFillBody> {
                         ),
                         FlatButton(
                           child: const Text('change fill-color'),
-                          onPressed: (_selectedFill == null) 
-                              ? null 
-                              : _changeFillColor,
+                          onPressed:
+                              (_selectedFill == null) ? null : _changeFillColor,
                         ),
                         FlatButton(
                           child: const Text('change fill-outline-color'),
@@ -228,15 +227,13 @@ class PlaceFillBodyState extends State<PlaceFillBody> {
                         ),
                         FlatButton(
                           child: const Text('change position'),
-                          onPressed: (_selectedFill == null) 
-                              ? null 
-                              : _changePosition,
+                          onPressed:
+                              (_selectedFill == null) ? null : _changePosition,
                         ),
                         FlatButton(
                           child: const Text('toggle draggable'),
-                          onPressed: (_selectedFill == null) 
-                              ? null 
-                              : _changeDraggable,
+                          onPressed:
+                              (_selectedFill == null) ? null : _changeDraggable,
                         ),
                       ],
                     ),

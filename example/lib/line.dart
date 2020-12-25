@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:mapbox_gl/cedarmaps.dart';
 
 import 'main.dart';
 import 'page.dart';
@@ -71,17 +71,16 @@ class LineBodyState extends State<LineBody> {
   void _add() {
     controller.addLine(
       LineOptions(
-        geometry: [
-          LatLng(-33.86711, 151.1947171),
-          LatLng(-33.86711, 151.1947171),
-          LatLng(-32.86711, 151.1947171),
-          LatLng(-33.86711, 152.1947171),
-        ],
-        lineColor: "#ff0000",
-        lineWidth: 14.0,
-        lineOpacity: 0.5,
-        draggable: true
-      ),
+          geometry: [
+            LatLng(-33.86711, 151.1947171),
+            LatLng(-33.86711, 151.1947171),
+            LatLng(-32.86711, 151.1947171),
+            LatLng(-33.86711, 152.1947171),
+          ],
+          lineColor: "#ff0000",
+          lineWidth: 14.0,
+          lineOpacity: 0.5,
+          draggable: true),
     );
     setState(() {
       _lineCount += 1;
@@ -95,7 +94,6 @@ class LineBodyState extends State<LineBody> {
       _lineCount -= 1;
     });
   }
-
 
   Future<void> _changeAlpha() async {
     double current = _selectedLine.options.lineOpacity;
@@ -123,10 +121,7 @@ class LineBodyState extends State<LineBody> {
   void onStyleLoadedCallback() {
     controller.addLine(
       LineOptions(
-        geometry: [
-          LatLng(37.4220, -122.0841),
-          LatLng(37.4240, -122.0941)
-        ],
+        geometry: [LatLng(37.4220, -122.0841), LatLng(37.4240, -122.0941)],
         lineColor: "#ff0000",
         lineWidth: 14.0,
         lineOpacity: 0.5,
@@ -144,8 +139,9 @@ class LineBodyState extends State<LineBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: MapboxMap(
-              accessToken: MapsDemo.ACCESS_TOKEN,
+            child: CedarmapsMap(
+              clientID: MapsDemo.CLIENT_ID,
+              clientSecret: MapsDemo.CLIENT_SECRET,
               onMapCreated: _onMapCreated,
               onStyleLoadedCallback: onStyleLoadedCallback,
               initialCameraPosition: const CameraPosition(
@@ -188,13 +184,15 @@ class LineBodyState extends State<LineBody> {
                         ),
                         FlatButton(
                           child: const Text('print current LatLng'),
-                          onPressed:
-                              (_selectedLine == null) ? null : () async{
-                                var latLngs = await controller.getLineLatLngs(_selectedLine);
-                                for (var latLng in latLngs) {
-                                  print(latLng.toString());
-                                }
-                              },
+                          onPressed: (_selectedLine == null)
+                              ? null
+                              : () async {
+                                  var latLngs = await controller
+                                      .getLineLatLngs(_selectedLine);
+                                  for (var latLng in latLngs) {
+                                    print(latLng.toString());
+                                  }
+                                },
                         ),
                       ],
                     ),

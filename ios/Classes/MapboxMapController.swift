@@ -33,6 +33,8 @@ class MapboxMapController: NSObject, FlutterPlatformView, MGLMapViewDelegate, Ma
             }
         }
         mapView = MGLMapView(frame: frame)
+        mapView.logoView.alpha = 0
+        mapView.attributionButton.alpha = 0
         mapView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
         self.registrar = registrar
         

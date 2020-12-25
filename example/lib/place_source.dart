@@ -7,7 +7,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:mapbox_gl/cedarmaps.dart';
 
 import 'main.dart';
 import 'page.dart';
@@ -58,7 +58,7 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
         ));
   }
 
-  Future<void> removeImageSource(String name){
+  Future<void> removeImageSource(String name) {
     return controller.removeImageSource(name);
   }
 
@@ -80,11 +80,12 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: MapboxMap(
-              accessToken: MapsDemo.ACCESS_TOKEN,
+            child: CedarmapsMap(
+              clientID: MapsDemo.CLIENT_ID,
+              clientSecret: MapsDemo.CLIENT_SECRET,
               onMapCreated: _onMapCreated,
               initialCameraPosition: const CameraPosition(
-                target: LatLng(-33.852, 151.211),
+                target: LatLng(35.7374, 51.4057),
                 zoom: 11.0,
               ),
             ),
@@ -101,22 +102,34 @@ class PlaceSymbolBodyState extends State<PlaceSymbolBody> {
                       children: <Widget>[
                         FlatButton(
                           child: const Text('Add source (asset image)'),
-                          onPressed: sourceAdded ? null : () => addImageSourceFromAsset("sydney", "assets/sydney.png").then((value) => setState(() => sourceAdded = true)),
+                          onPressed: sourceAdded
+                              ? null
+                              : () => addImageSourceFromAsset(
+                                      "sydney", "assets/sydney.png")
+                                  .then((value) =>
+                                      setState(() => sourceAdded = true)),
                         ),
                         FlatButton(
                           child: const Text('Remove source (asset image)'),
-                          onPressed: sourceAdded ? () async {
-                            await removeLayer("imageLayer");
-                            removeImageSource("sydney").then((value) => setState(() => sourceAdded = false));
-                          } : null,
+                          onPressed: sourceAdded
+                              ? () async {
+                                  await removeLayer("imageLayer");
+                                  removeImageSource("sydney").then((value) =>
+                                      setState(() => sourceAdded = false));
+                                }
+                              : null,
                         ),
                         FlatButton(
                           child: const Text('Show layer'),
-                          onPressed: sourceAdded ? () => addLayer("imageLayer", "sydney") : null,
+                          onPressed: sourceAdded
+                              ? () => addLayer("imageLayer", "sydney")
+                              : null,
                         ),
                         FlatButton(
                           child: const Text('Hide layer'),
-                          onPressed: sourceAdded ? () => removeLayer("imageLayer") : null,
+                          onPressed: sourceAdded
+                              ? () => removeLayer("imageLayer")
+                              : null,
                         ),
                       ],
                     ),

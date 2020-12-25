@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:mapbox_gl/mapbox_gl.dart';
+import 'package:mapbox_gl/cedarmaps.dart';
 
 import 'main.dart';
 import 'page.dart';
@@ -41,11 +41,12 @@ class AnimateCameraState extends State<AnimateCamera> {
           child: SizedBox(
             width: 300.0,
             height: 200.0,
-            child: MapboxMap(
-              accessToken: MapsDemo.ACCESS_TOKEN,
+            child: CedarmapsMap(
+              clientID: MapsDemo.CLIENT_ID,
+              clientSecret: MapsDemo.CLIENT_SECRET,
               onMapCreated: _onMapCreated,
               initialCameraPosition:
-                  const CameraPosition(target: LatLng(0.0, 0.0)),
+                  const CameraPosition(target: LatLng(35.7374, 51.4057)),
             ),
           ),
         ),
@@ -56,26 +57,32 @@ class AnimateCameraState extends State<AnimateCamera> {
               children: <Widget>[
                 FlatButton(
                   onPressed: () {
-                    mapController.animateCamera(
-                      CameraUpdate.newCameraPosition(
-                        const CameraPosition(
-                          bearing: 270.0,
-                          target: LatLng(51.5160895, -0.1294527),
-                          tilt: 30.0,
-                          zoom: 17.0,
-                        ),
-                      ),
-                    ).then((result)=>print("mapController.animateCamera() returned $result"));
+                    mapController
+                        .animateCamera(
+                          CameraUpdate.newCameraPosition(
+                            const CameraPosition(
+                              bearing: 270.0,
+                              target: LatLng(35.6996, 51.3380),
+                              tilt: 30.0,
+                              zoom: 17.0,
+                            ),
+                          ),
+                        )
+                        .then((result) => print(
+                            "mapController.animateCamera() returned $result"));
                   },
                   child: const Text('newCameraPosition'),
                 ),
                 FlatButton(
                   onPressed: () {
-                    mapController.animateCamera(
-                      CameraUpdate.newLatLng(
-                        const LatLng(56.1725505, 10.1850512),
-                      ),
-                    ).then((result)=>print("mapController.animateCamera() returned $result"));
+                    mapController
+                        .animateCamera(
+                          CameraUpdate.newLatLng(
+                            const LatLng(35.7158, 51.3942),
+                          ),
+                        )
+                        .then((result) => print(
+                            "mapController.animateCamera() returned $result"));
                   },
                   child: const Text('newLatLng'),
                 ),
@@ -84,8 +91,8 @@ class AnimateCameraState extends State<AnimateCamera> {
                     mapController.animateCamera(
                       CameraUpdate.newLatLngBounds(
                         LatLngBounds(
-                          southwest: const LatLng(-38.483935, 113.248673),
-                          northeast: const LatLng(-8.982446, 153.823821),
+                          southwest: const LatLng(35.3939, 51.0219),
+                          northeast: const LatLng(35.8267, 51.6426),
                         ),
                         left: 10,
                         top: 5,
@@ -99,7 +106,7 @@ class AnimateCameraState extends State<AnimateCamera> {
                   onPressed: () {
                     mapController.animateCamera(
                       CameraUpdate.newLatLngZoom(
-                        const LatLng(37.4231613, -122.087159),
+                        const LatLng(35.7575, 51.4099),
                         11.0,
                       ),
                     );
