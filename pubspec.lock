@@ -98,20 +98,16 @@ packages:
   mapbox_gl_platform_interface:
     dependency: "direct main"
     description:
-      path: mapbox_gl_platform_interface
-      ref: HEAD
-      resolved-ref: "37703aa872a877d0dc4c88fe358647003f4949cc"
-      url: "https://github.com/tobrun/flutter-mapbox-gl.git"
-    source: git
+      name: mapbox_gl_platform_interface
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.9.0"
   mapbox_gl_web:
     dependency: "direct main"
     description:
-      path: mapbox_gl_web
-      ref: HEAD
-      resolved-ref: "37703aa872a877d0dc4c88fe358647003f4949cc"
-      url: "https://github.com/tobrun/flutter-mapbox-gl.git"
-    source: git
+      name: mapbox_gl_web
+      url: "https://pub.dartlang.org"
+    source: hosted
     version: "0.9.0"
   meta:
     dependency: transitive
