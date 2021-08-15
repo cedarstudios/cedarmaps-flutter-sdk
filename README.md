@@ -1,4 +1,6 @@
-# Cedarmaps Flutter SDK
+# DEPRECATED: Cedarmaps Flutter SDK
+
+This SDK is no longer supported and won't be updated anymore.
 
 > **Please note that this project is based on a community driven Mapbox GL plugin.** We welcome [feedback](https://github.com/tobrun/flutter-mapbox-gl/issues) and contributions.
 
